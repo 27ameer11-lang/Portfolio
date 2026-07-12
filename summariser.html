@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Text Summariser | Muhammad Ameer S</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="ai.css" />
+    <style>
+        .summariser-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 8px;
+            padding: 35px;
+            width: 100%;
+        }
+
+        .summariser-card h2 {
+            color: #ffffff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .summariser-card .subtitle {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .input-area {
+            width: 100%;
+            min-height: 180px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 6px;
+            color: #c8d6e5;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-area:focus {
+            border-color: #0078ff;
+        }
+
+        .input-area::placeholder {
+            color: rgba(138, 155, 181, 0.4);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .word-count {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .length-selector {
+            display: flex;
+            gap: 6px;
+        }
+
+        .length-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #5a6a7e;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .length-btn:hover {
+            border-color: rgba(0, 120, 255, 0.4);
+            color: #c8d6e5;
+        }
+
+        .length-btn.active {
+            background: #0078ff;
+            border-color: #0078ff;
+            color: #ffffff;
+        }
+
+        .btn-summarise {
+            background: #0078ff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn-summarise:hover {
+            background: #005bc4;
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.15);
+            color: #5a6a7e;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            margin-left: 8px;
+        }
+
+        .btn-clear:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .output-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0, 120, 255, 0.08);
+            display: none;
+        }
+
+        .output-section.visible {
+            display: block;
+        }
+
+        .output-label {
+            color: #0078ff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .output-text {
+            color: #c8d6e5;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 120, 255, 0.08);
+            border-radius: 6px;
+            padding: 18px;
+            min-height: 60px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .output-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .output-stats {
+            color: #5a6a7e;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .output-stats span {
+            color: #0078ff;
+        }
+
+        .btn-copy {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.2);
+            color: #5a6a7e;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .btn-copy:hover {
+            border-color: #0078ff;
+            color: #0078ff;
+        }
+
+        .btn-copy.copied {
+            border-color: #39ff14;
+            color: #39ff14;
+        }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            display: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .back-link {
+            color: #5a6a7e;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #0078ff;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.08);
+            color: #39ff14;
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="star-container"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand nav-logo" href="index.html">ameer@dev:~$</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">~/home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#projects">~/projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">~/contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="main-wrapper container">
+
+        <a href="index.html#projects" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> back to projects
+        </a>
+
+        <div class="summariser-card">
+            <h2>
+                <i class="fa-solid fa-wand-magic-sparkles" style="color:#0078ff;margin-right:8px;"></i>
+                TEXT SUMMARISER
+                <span class="info-badge">100% OFFLINE</span>
+            </h2>
+            <p class="subtitle">PASTE TEXT → INSTANT SUMMARY USING FREQUENCY ANALYSIS</p>
+
+            <textarea class="input-area" id="inputText"
+                      placeholder="Paste or type your text here... (minimum 3 sentences for best results)"
+                      oninput="updateWordCount()"></textarea>
+
+            <div class="controls-row">
+                <span class="word-count" id="wordCount">0 words &middot; 0 sentences</span>
+
+                <div class="length-selector">
+                    <button class="length-btn active" data-length="short"
+                            onclick="setLength(this)">SHORT</button>
+                    <button class="length-btn" data-length="medium"
+                            onclick="setLength(this)">MEDIUM</button>
+                    <button class="length-btn" data-length="detailed"
+                            onclick="setLength(this)">DETAILED</button>
+                </div>
+            </div>
+
+            <button class="btn-summarise" id="summariseBtn" onclick="summariseText()">
+                <i class="fa-solid fa-bolt"></i> SUMMARISE
+            </button>
+
+            <button class="btn-clear" onclick="clearAll()">
+                <i class="fa-solid fa-trash"></i> CLEAR
+            </button>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <!-- OUTPUT -->
+            <div class="output-section" id="outputSection">
+                <div class="output-label">OUTPUT //</div>
+                <div class="output-text" id="outputText"></div>
+                <div class="output-footer">
+                    <span class="output-stats" id="outputStats">
+                        <span id="outWords">0</span> words &middot;
+                        <span id="outReduction">0%</span> reduction
+                    </span>
+                    <button class="btn-copy" id="copyBtn" onclick="copySummary()">
+                        <i class="fa-solid fa-copy"></i> COPY
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CHAT -->
+    <button class="ai-chat-toggle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-dot"></span>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-terminal network-pulse"></i>
+                <div>
+                    <h4>AMEER_AI</h4>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            <button class="close-chat-btn" onclick="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="ai-message">
+                <p><strong>system:</strong> You're on the Summariser page. Ask me anything.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput"
+                   placeholder="ask something..."
+                   onkeypress="handleKeyPress(event)" />
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            if (!container) return;
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        window.addEventListener('load', createStars);
+    </script>
+    <script src="ai.js"></script>
+
+    <!-- ============================================ -->
+    <!-- OFFLINE SUMMARISER ENGINE                    -->
+    <!-- Pure JavaScript — no API needed              -->
+    <!-- ============================================ -->
+    <script>
+        let selectedLength = 'short';
+
+        // Common English stop words (filtered out from scoring)
+        const STOP_WORDS = new Set([
+            'a','an','the','and','or','but','if','then','so','because','as','of',
+            'at','by','for','with','about','against','between','into','through',
+            'during','before','after','above','below','to','from','up','down','in',
+            'out','on','off','over','under','again','further','once','here','there',
+            'when','where','why','how','all','any','both','each','few','more','most',
+            'other','some','such','no','nor','not','only','own','same','than','too',
+            'very','can','will','just','should','now','i','me','my','myself','we',
+            'our','ours','ourselves','you','your','yours','yourself','yourselves',
+            'he','him','his','himself','she','her','hers','herself','it','its',
+            'itself','they','them','their','theirs','themselves','what','which',
+            'who','whom','this','that','these','those','am','is','are','was','were',
+            'be','been','being','have','has','had','having','do','does','did',
+            'doing','would','could','should','may','might','must','shall','will'
+        ]);
+
+        /* ── Split text into sentences ── */
+        function splitSentences(text) {
+            // Handle abbreviations and edge cases
+            const cleaned = text
+                .replace(/([.!?])\s*(?=[A-Z])/g, "$1|")
+                .replace(/\n+/g, ' ');
+            return cleaned.split('|').map(s => s.trim()).filter(s => s.length > 10);
+        }
+
+        /* ── Extract words (lowercase, alphanumeric only) ── */
+        function extractWords(text) {
+            return text.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+        }
+
+        /* ── Build word frequency map ── */
+        function buildFrequency(words) {
+            const freq = {};
+            for (const word of words) {
+                freq[word] = (freq[word] || 0) + 1;
+            }
+
+            // Normalise scores (divide by max)
+            const max = Math.max(...Object.values(freq));
+            for (const word in freq) {
+                freq[word] = freq[word] / max;
+            }
+            return freq;
+        }
+
+        /* ── Score each sentence based on word importance ── */
+        function scoreSentences(sentences, freq) {
+            return sentences.map((sentence, index) => {
+                const words = extractWords(sentence);
+                if (words.length === 0) return { sentence, score: 0, index };
+
+                let score = 0;
+                for (const word of words) {
+                    if (freq[word]) score += freq[word];
+                }
+
+                // Normalise by sentence length (avoid bias toward long sentences)
+                score = score / Math.sqrt(words.length);
+
+                // Slight boost for first & second sentences (often important)
+                if (index === 0) score *= 1.2;
+                if (index === 1) score *= 1.1;
+
+                return { sentence, score, index };
+            });
+        }
+
+        /* ── Main summarisation function ── */
+        function summarise(text, ratio) {
+            const sentences = splitSentences(text);
+            if (sentences.length === 0) return '';
+            if (sentences.length === 1) return sentences[0];
+
+            const allWords = extractWords(text);
+            const freq = buildFrequency(allWords);
+            const scored = scoreSentences(sentences, freq);
+
+            // Determine how many sentences to keep
+            let keepCount = Math.max(1, Math.round(sentences.length * ratio));
+            keepCount = Math.min(keepCount, sentences.length);
+
+            // Sort by score, take top N
+            const top = [...scored]
+                .sort((a, b) => b.score - a.score)
+                .slice(0, keepCount);
+
+            // Restore original order
+            top.sort((a, b) => a.index - b.index);
+
+            return top.map(s => s.sentence).join(' ');
+        }
+
+        /* ── UI Helpers ── */
+        function countWords(text) {
+            const t = text.trim();
+            if (!t) return 0;
+            return t.split(/\s+/).length;
+        }
+
+        function countSentences(text) {
+            return splitSentences(text).length;
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('inputText').value;
+            const words = countWords(text);
+            const sents = countSentences(text);
+            document.getElementById('wordCount').textContent =
+                `${words} word${words !== 1 ? 's' : ''} · ${sents} sentence${sents !== 1 ? 's' : ''}`;
+        }
+
+        function setLength(btn) {
+            document.querySelectorAll('.length-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedLength = btn.dataset.length;
+        }
+
+        function summariseText() {
+            const text = document.getElementById('inputText').value.trim();
+            const errorEl = document.getElementById('errorMsg');
+            const output = document.getElementById('outputSection');
+
+            errorEl.classList.remove('visible');
+            output.classList.remove('visible');
+
+            if (!text) {
+                errorEl.textContent = '> error: no text provided';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            const sentenceCount = countSentences(text);
+            if (sentenceCount < 2) {
+                errorEl.textContent = '> error: need at least 2 sentences to summarise';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            // Determine ratio based on length setting
+            const ratioMap = {
+                short:    0.25,   // 25% of sentences
+                medium:   0.5,    // 50% of sentences
+                detailed: 0.75    // 75% of sentences
+            };
+
+            const summary = summarise(text, ratioMap[selectedLength]);
+
+            if (!summary) {
+                errorEl.textContent = '> error: could not generate summary';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            // Display output
+            document.getElementById('outputText').textContent = summary;
+
+            const originalWords = countWords(text);
+            const summaryWords = countWords(summary);
+            const reduction = Math.round((1 - summaryWords / originalWords) * 100);
+
+            document.getElementById('outWords').textContent = summaryWords;
+            document.getElementById('outReduction').textContent = reduction + '%';
+
+            output.classList.add('visible');
+            output.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputSection').classList.remove('visible');
+            document.getElementById('errorMsg').classList.remove('visible');
+            updateWordCount();
+        }
+
+        function copySummary() {
+            const text = document.getElementById('outputText').textContent;
+            const btn = document.getElementById('copyBtn');
+
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> COPIED';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<i class="fa-solid fa-copy"></i> COPY';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

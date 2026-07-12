@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Paragraph Quiz Game | Muhammad Ameer S</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="ai.css" />
+    <style>
+        .quiz-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 8px;
+            padding: 35px;
+            width: 100%;
+        }
+
+        .quiz-card h2 {
+            color: #ffffff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .quiz-card .subtitle {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.08);
+            color: #39ff14;
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+
+        /* ── SCREENS (setup / game / results) ── */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* ── SETUP SCREEN ── */
+        .input-area {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 6px;
+            color: #c8d6e5;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-area:focus {
+            border-color: #0078ff;
+        }
+
+        .input-area::placeholder {
+            color: rgba(138, 155, 181, 0.4);
+        }
+
+        .setup-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 6px;
+        }
+
+        .diff-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #5a6a7e;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .diff-btn:hover {
+            border-color: rgba(0, 120, 255, 0.4);
+            color: #c8d6e5;
+        }
+
+        .diff-btn.active {
+            background: #0078ff;
+            border-color: #0078ff;
+            color: #ffffff;
+        }
+
+        .word-count-label {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary-c {
+            background: #0078ff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-primary-c:hover {
+            background: #005bc4;
+        }
+
+        .btn-secondary-c {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.2);
+            color: #8a9bb5;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+            margin-left: 8px;
+        }
+
+        .btn-secondary-c:hover {
+            border-color: #0078ff;
+            color: #0078ff;
+        }
+
+        .btn-load-sample {
+            background: transparent;
+            border: 1px dashed rgba(0, 120, 255, 0.25);
+            color: #5a6a7e;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-load-sample:hover {
+            border-color: #0078ff;
+            color: #0078ff;
+        }
+
+        /* ── HUD (score, lives, streak) ── */
+        .hud {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .hud-cell {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .hud-num {
+            color: #0078ff;
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .hud-lbl {
+            color: #5a6a7e;
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
+
+        .hud-lives {
+            color: #ff4444;
+            font-size: 1.2rem;
+        }
+
+        /* ── Progress Bar ── */
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0078ff, #00c8ff);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* ── Question box ── */
+        .question-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(0, 120, 255, 0.15);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .question-num {
+            color: #0078ff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            color: #ffffff;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .question-text .blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 2px solid #0078ff;
+            color: #0078ff;
+            font-weight: bold;
+            padding: 0 8px;
+        }
+
+        /* ── Options ── */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .option-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.15);
+            color: #c8d6e5;
+            padding: 14px 16px;
+            border-radius: 6px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #0078ff;
+            background: rgba(0, 120, 255, 0.08);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option-btn.correct {
+            background: rgba(57, 255, 20, 0.15);
+            border-color: #39ff14;
+            color: #39ff14;
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 68, 68, 0.15);
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* ── Feedback ── */
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px 18px;
+            border-radius: 6px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback-box.visible {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+
+        .feedback-correct {
+            background: rgba(57, 255, 20, 0.1);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+        }
+
+        .feedback-wrong {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .feedback-title {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .feedback-correct .feedback-title { color: #39ff14; }
+        .feedback-wrong .feedback-title   { color: #ff4444; }
+
+        .feedback-text {
+            color: #c8d6e5;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .feedback-text .highlight {
+            color: #0078ff;
+            font-weight: bold;
+        }
+
+        .btn-next {
+            background: #0078ff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+
+        .btn-next:hover {
+            background: #005bc4;
+        }
+
+        /* ── Results screen ── */
+        .results-hero {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        .results-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .results-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .results-subtitle {
+            color: #8a9bb5;
+            font-size: 0.9rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .results-cell {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 6px;
+            padding: 18px 12px;
+            text-align: center;
+        }
+
+        .results-cell .big {
+            color: #0078ff;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .results-cell .lbl {
+            color: #5a6a7e;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .rating {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 15px;
+        }
+
+        .rating-perfect  { background: rgba(255,200,0,0.15); color: #ffc800; border: 1px solid #ffc800; }
+        .rating-great    { background: rgba(57,255,20,0.15); color: #39ff14; border: 1px solid #39ff14; }
+        .rating-good     { background: rgba(0,120,255,0.15); color: #0078ff; border: 1px solid #0078ff; }
+        .rating-tryagain { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid #ff4444; }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            display: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .back-link {
+            color: #5a6a7e;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #0078ff;
+        }
+
+        @media (max-width: 600px) {
+            .hud { grid-template-columns: repeat(2, 1fr); }
+            .options-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="star-container"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand nav-logo" href="index.html">ameer@dev:~$</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">~/home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#projects">~/projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">~/contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="main-wrapper container">
+
+        <a href="index.html#projects" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> back to projects
+        </a>
+
+        <div class="quiz-card">
+            <h2>
+                <i class="fa-solid fa-gamepad" style="color:#0078ff;margin-right:8px;"></i>
+                PARAGRAPH QUIZ GAME
+                <span class="info-badge">100% OFFLINE</span>
+            </h2>
+            <p class="subtitle">PASTE ANY TEXT → GET AUTO-GENERATED QUIZ QUESTIONS</p>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SCREEN 1: SETUP                          -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="screen active" id="screen-setup">
+                <textarea class="input-area" id="paragraphInput"
+                          placeholder="Paste a paragraph (minimum 5 sentences) — a story, article, textbook chapter, anything..."
+                          oninput="updateSetupCount()"></textarea>
+
+                <div class="setup-controls">
+                    <div>
+                        <span class="word-count-label" id="setupCount">0 words · 0 sentences</span>
+                        <button class="btn-load-sample" onclick="loadSample()" style="margin-left:12px;">
+                            <i class="fa-solid fa-file-lines"></i> LOAD SAMPLE
+                        </button>
+                    </div>
+
+                    <div class="difficulty-selector">
+                        <button class="diff-btn active" data-diff="easy"
+                                onclick="setDifficulty(this)">EASY</button>
+                        <button class="diff-btn" data-diff="medium"
+                                onclick="setDifficulty(this)">MEDIUM</button>
+                        <button class="diff-btn" data-diff="hard"
+                                onclick="setDifficulty(this)">HARD</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary-c" onclick="startQuiz()">
+                    <i class="fa-solid fa-play"></i> START QUIZ
+                </button>
+
+                <div class="error-msg" id="setupError"></div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SCREEN 2: GAME                           -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="screen" id="screen-game">
+
+                <div class="hud">
+                    <div class="hud-cell">
+                        <div class="hud-num" id="hudScore">0</div>
+                        <div class="hud-lbl">Score</div>
+                    </div>
+                    <div class="hud-cell">
+                        <div class="hud-num" id="hudStreak">0</div>
+                        <div class="hud-lbl">Streak</div>
+                    </div>
+                    <div class="hud-cell">
+                        <div class="hud-num hud-lives" id="hudLives">♥♥♥</div>
+                        <div class="hud-lbl">Lives</div>
+                    </div>
+                    <div class="hud-cell">
+                        <div class="hud-num" id="hudProgress">0/0</div>
+                        <div class="hud-lbl">Question</div>
+                    </div>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="question-box">
+                    <div class="question-num" id="questionNum">QUESTION 1</div>
+                    <div class="question-text" id="questionText"></div>
+                </div>
+
+                <div class="options-grid" id="optionsGrid"></div>
+
+                <div class="feedback-box" id="feedbackBox">
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                    <button class="btn-next" id="btnNext" onclick="nextQuestion()">
+                        NEXT <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <button class="btn-secondary-c" onclick="quitGame()"
+                        style="margin-top:20px;">
+                    <i class="fa-solid fa-xmark"></i> QUIT
+                </button>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- SCREEN 3: RESULTS                        -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="screen" id="screen-results">
+                <div class="results-hero">
+                    <div class="results-emoji" id="resultsEmoji">🎉</div>
+                    <div class="results-title" id="resultsTitle">QUIZ COMPLETE</div>
+                    <div class="results-subtitle" id="resultsSubtitle"></div>
+                    <div id="resultsRatingWrap"></div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="results-cell">
+                        <div class="big" id="finalScore">0</div>
+                        <div class="lbl">Final Score</div>
+                    </div>
+                    <div class="results-cell">
+                        <div class="big" id="finalCorrect">0/0</div>
+                        <div class="lbl">Correct</div>
+                    </div>
+                    <div class="results-cell">
+                        <div class="big" id="finalAccuracy">0%</div>
+                        <div class="lbl">Accuracy</div>
+                    </div>
+                </div>
+
+                <button class="btn-primary-c" onclick="playAgain()">
+                    <i class="fa-solid fa-rotate-right"></i> PLAY AGAIN
+                </button>
+                <button class="btn-secondary-c" onclick="newParagraph()">
+                    <i class="fa-solid fa-file-lines"></i> NEW PARAGRAPH
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AI CHAT -->
+    <button class="ai-chat-toggle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-dot"></span>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-terminal network-pulse"></i>
+                <div>
+                    <h4>AMEER_AI</h4>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            <button class="close-chat-btn" onclick="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="ai-message">
+                <p><strong>system:</strong> You're on the Quiz Game. Ready to test yourself?</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput"
+                   placeholder="ask something..."
+                   onkeypress="handleKeyPress(event)" />
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            if (!container) return;
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        window.addEventListener('load', createStars);
+    </script>
+    <script src="ai.js"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- QUIZ ENGINE                                  -->
+    <!-- Auto question generator + game logic         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script>
+        /* ─── STATE ─── */
+        let paragraph      = '';
+        let sentences      = [];
+        let questions      = [];
+        let currentIdx     = 0;
+        let score          = 0;
+        let streak         = 0;
+        let lives          = 3;
+        let correctCount   = 0;
+        let difficulty     = 'easy';
+        let answered       = false;
+
+        /* ─── STOP WORDS (skip when picking blanks) ─── */
+        const STOP = new Set([
+            'a','an','the','and','or','but','if','then','so','because','as','of',
+            'at','by','for','with','about','against','between','into','through',
+            'during','before','after','above','below','to','from','up','down','in',
+            'out','on','off','over','under','again','further','once','here','there',
+            'when','where','why','how','all','any','both','each','few','more','most',
+            'other','some','such','no','nor','not','only','own','same','than','too',
+            'very','can','will','just','should','now','i','me','my','myself','we',
+            'our','ours','ourselves','you','your','yours','yourself','yourselves',
+            'he','him','his','himself','she','her','hers','herself','it','its',
+            'itself','they','them','their','theirs','themselves','what','which',
+            'who','whom','this','that','these','those','am','is','are','was','were',
+            'be','been','being','have','has','had','having','do','does','did','doing',
+            'would','could','should','may','might','must','shall','also','one','two',
+            'three','many','much','said','says','into'
+        ]);
+
+        /* ─── SAMPLE PARAGRAPH ─── */
+        const SAMPLE = `The Great Wall of China is one of the most impressive architectural feats in human history. Construction began during the seventh century BCE and continued for over two thousand years. The wall stretches for approximately 21,196 kilometres across northern China. It was originally built to protect Chinese states and empires from nomadic invasions. Millions of workers, including soldiers, peasants, and prisoners, contributed to its construction. The most famous sections were built during the Ming Dynasty between 1368 and 1644. Contrary to popular belief, the Great Wall is not visible from space with the naked eye. Today, the wall is a UNESCO World Heritage Site and attracts millions of tourists every year. Erosion, tourism, and vandalism have damaged large portions of the structure. Preservation efforts by the Chinese government are ongoing to protect this cultural treasure.`;
+
+        /* ═══════════════════════════════════════ */
+        /* SETUP SCREEN LOGIC                      */
+        /* ═══════════════════════════════════════ */
+        function countWords(text) {
+            const t = text.trim();
+            return t ? t.split(/\s+/).length : 0;
+        }
+
+        function splitSentences(text) {
+            const cleaned = text
+                .replace(/([.!?])\s*(?=[A-Z])/g, "$1|")
+                .replace(/\n+/g, ' ');
+            return cleaned.split('|').map(s => s.trim()).filter(s => s.length > 15);
+        }
+
+        function updateSetupCount() {
+            const text  = document.getElementById('paragraphInput').value;
+            const words = countWords(text);
+            const sents = splitSentences(text).length;
+            document.getElementById('setupCount').textContent =
+                `${words} word${words !== 1 ? 's' : ''} · ${sents} sentence${sents !== 1 ? 's' : ''}`;
+        }
+
+        function setDifficulty(btn) {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            difficulty = btn.dataset.diff;
+        }
+
+        function loadSample() {
+            document.getElementById('paragraphInput').value = SAMPLE;
+            updateSetupCount();
+        }
+
+        function startQuiz() {
+            const text = document.getElementById('paragraphInput').value.trim();
+            const errorEl = document.getElementById('setupError');
+
+            errorEl.classList.remove('visible');
+
+            if (!text) {
+                errorEl.textContent = '> error: please paste some text';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            const sents = splitSentences(text);
+            if (sents.length < 5) {
+                errorEl.textContent = '> error: need at least 5 sentences (found ' + sents.length + ')';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            paragraph = text;
+            sentences = sents;
+            questions = generateQuestions(sentences, difficulty);
+
+            if (questions.length === 0) {
+                errorEl.textContent = '> error: could not generate questions — try a longer paragraph';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            // Reset game state
+            currentIdx   = 0;
+            score        = 0;
+            streak       = 0;
+            correctCount = 0;
+            lives        = 3;
+            answered     = false;
+
+            switchScreen('game');
+            renderQuestion();
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* QUESTION GENERATOR                      */
+        /* ═══════════════════════════════════════ */
+        function generateQuestions(sents, diff) {
+            const questions = [];
+            const questionCount = { easy: 5, medium: 8, hard: 12 }[diff];
+
+            // Shuffle sentences so we don't always pick the first N
+            const shuffled = [...sents].sort(() => Math.random() - 0.5);
+
+            for (const sentence of shuffled) {
+                if (questions.length >= questionCount) break;
+
+                const q = tryMakeFillBlank(sentence, sents);
+                if (q) {
+                    questions.push(q);
+                    continue;
+                }
+
+                const tf = tryMakeTrueFalse(sentence, sents);
+                if (tf) questions.push(tf);
+            }
+
+            return questions;
+        }
+
+        /* ─── Fill in the blank generator ─── */
+        function tryMakeFillBlank(sentence, allSentences) {
+            const words = sentence.split(/\s+/);
+
+            // Find candidate words: proper nouns, numbers, or long words
+            const candidates = [];
+            words.forEach((w, i) => {
+                const clean = w.replace(/[^a-zA-Z0-9]/g, '');
+                if (clean.length < 4) return;
+                if (STOP.has(clean.toLowerCase())) return;
+
+                // Prefer: capitalised words (not first word), numbers, long words
+                let score = 0;
+                if (/^\d+$/.test(clean)) score += 3;                             // pure numbers
+                if (/^[A-Z]/.test(clean) && i > 0) score += 2;                   // proper nouns
+                if (clean.length >= 7) score += 1;                               // long words
+
+                if (score > 0) {
+                    candidates.push({ index: i, word: clean, originalWord: w, score });
+                }
+            });
+
+            if (candidates.length === 0) return null;
+
+            // Pick the highest-scored candidate
+            candidates.sort((a, b) => b.score - a.score);
+            const chosen = candidates[0];
+
+            // Build the question by replacing the chosen word with a blank
+            const questionWords = [...words];
+            questionWords[chosen.index] = '____';
+            const questionText = questionWords.join(' ');
+
+            // Build wrong options from other words in paragraph
+            const wrongs = buildDistractors(chosen.word, allSentences);
+            if (wrongs.length < 3) return null;
+
+            const options = [chosen.word, ...wrongs.slice(0, 3)].sort(() => Math.random() - 0.5);
+
+            return {
+                type: 'fill',
+                question: questionText,
+                options: options,
+                correct: chosen.word,
+                sourceSentence: sentence,
+                explanation: `The correct word is "${chosen.word}". The full sentence reads: "${sentence}"`
+            };
+        }
+
+        /* ─── True/False generator ─── */
+        function tryMakeTrueFalse(sentence, allSentences) {
+            // 50/50 chance we make it TRUE or FALSE
+            const makeTrue = Math.random() > 0.5;
+
+            if (makeTrue) {
+                return {
+                    type: 'tf',
+                    question: `TRUE or FALSE: "${sentence}"`,
+                    options: ['TRUE', 'FALSE'],
+                    correct: 'TRUE',
+                    sourceSentence: sentence,
+                    explanation: `TRUE. This statement appears directly in the paragraph.`
+                };
+            } else {
+                // Modify sentence to make it false (swap a key word)
+                const modified = modifySentence(sentence, allSentences);
+                if (!modified) return null;
+
+                return {
+                    type: 'tf',
+                    question: `TRUE or FALSE: "${modified.altered}"`,
+                    options: ['TRUE', 'FALSE'],
+                    correct: 'FALSE',
+                    sourceSentence: sentence,
+                    explanation: `FALSE. The word "${modified.replacement}" was swapped in. The actual sentence uses "${modified.original}". Full sentence: "${sentence}"`
+                };
+            }
+        }
+
+        /* ─── Distractor word finder ─── */
+        function buildDistractors(correctWord, sents) {
+            const pool = new Set();
+            const correctLower = correctWord.toLowerCase();
+
+            sents.forEach(s => {
+                s.split(/\s+/).forEach(w => {
+                    const clean = w.replace(/[^a-zA-Z0-9]/g, '');
+                    if (clean.length < 4) return;
+                    if (STOP.has(clean.toLowerCase())) return;
+                    if (clean.toLowerCase() === correctLower) return;
+
+                    // Only add words of similar "type" (number vs word)
+                    const correctIsNum = /^\d+$/.test(correctWord);
+                    const isNum = /^\d+$/.test(clean);
+                    if (correctIsNum !== isNum) return;
+
+                    pool.add(clean);
+                });
+            });
+
+            return [...pool].sort(() => Math.random() - 0.5);
+        }
+
+        /* ─── Sentence modifier (for FALSE questions) ─── */
+        function modifySentence(sentence, allSents) {
+            const words = sentence.split(/\s+/);
+            const candidates = [];
+
+            words.forEach((w, i) => {
+                const clean = w.replace(/[^a-zA-Z0-9]/g, '');
+                if (clean.length < 4) return;
+                if (STOP.has(clean.toLowerCase())) return;
+                candidates.push({ index: i, word: clean, original: w });
+            });
+
+            if (candidates.length === 0) return null;
+
+            // Pick a random candidate to swap
+            const target = candidates[Math.floor(Math.random() * candidates.length)];
+            const distractors = buildDistractors(target.word, allSents);
+            if (distractors.length === 0) return null;
+
+            const replacement = distractors[0];
+            const newWords = [...words];
+            // Preserve punctuation from the original word
+            const punctuation = target.original.replace(/[a-zA-Z0-9]/g, '');
+            newWords[target.index] = replacement + punctuation;
+
+            return {
+                altered: newWords.join(' '),
+                original: target.word,
+                replacement: replacement
+            };
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* GAME SCREEN LOGIC                       */
+        /* ═══════════════════════════════════════ */
+        function switchScreen(name) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + name).classList.add('active');
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIdx];
+            answered = false;
+
+            document.getElementById('questionNum').textContent = `QUESTION ${currentIdx + 1}`;
+
+            // Show blanks as visible underlines for fill-in-blank
+            if (q.type === 'fill') {
+                document.getElementById('questionText').innerHTML =
+                    q.question.replace('____', '<span class="blank">____</span>');
+            } else {
+                document.getElementById('questionText').textContent = q.question;
+            }
+
+            // Render options
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = q.type === 'tf' ? '1fr 1fr' : '1fr 1fr';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(opt, btn);
+                grid.appendChild(btn);
+            });
+
+            // Hide feedback
+            document.getElementById('feedbackBox').classList.remove('visible', 'feedback-correct', 'feedback-wrong');
+
+            updateHUD();
+        }
+
+        function selectAnswer(chosen, btn) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentIdx];
+            const isCorrect = chosen === q.correct;
+
+            // Disable all buttons
+            document.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = true;
+                if (b.textContent === q.correct) b.classList.add('correct');
+                else if (b === btn && !isCorrect) b.classList.add('wrong');
+            });
+
+            const feedback = document.getElementById('feedbackBox');
+            const title = document.getElementById('feedbackTitle');
+            const text = document.getElementById('feedbackText');
+
+            if (isCorrect) {
+                score += 10 + (streak * 2);  // streak bonus
+                streak++;
+                correctCount++;
+
+                feedback.classList.remove('feedback-wrong');
+                feedback.classList.add('feedback-correct');
+                title.innerHTML = '<i class="fa-solid fa-circle-check"></i> CORRECT';
+
+                let bonusMsg = '';
+                if (streak > 1) bonusMsg = ` <span class="highlight">(+${streak * 2} streak bonus)</span>`;
+
+                text.innerHTML = `Nice work! +${10 + ((streak - 1) * 2)} points${bonusMsg}`;
+            } else {
+                streak = 0;
+                lives--;
+
+                feedback.classList.remove('feedback-correct');
+                feedback.classList.add('feedback-wrong');
+                title.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> WRONG';
+                text.innerHTML = q.explanation;
+            }
+
+            feedback.classList.add('visible');
+            updateHUD();
+
+            // Change next button text if last question or no lives
+            const nextBtn = document.getElementById('btnNext');
+            if (lives <= 0 || currentIdx === questions.length - 1) {
+                nextBtn.innerHTML = 'SEE RESULTS <i class="fa-solid fa-flag-checkered"></i>';
+            } else {
+                nextBtn.innerHTML = 'NEXT <i class="fa-solid fa-arrow-right"></i>';
+            }
+        }
+
+        function nextQuestion() {
+            if (lives <= 0) {
+                showResults(true);
+                return;
+            }
+
+            currentIdx++;
+            if (currentIdx >= questions.length) {
+                showResults(false);
+                return;
+            }
+            renderQuestion();
+        }
+
+        function updateHUD() {
+            document.getElementById('hudScore').textContent = score;
+            document.getElementById('hudStreak').textContent = streak;
+            document.getElementById('hudLives').textContent =
+                lives > 0 ? '♥'.repeat(lives) : '💀';
+            document.getElementById('hudProgress').textContent =
+                `${currentIdx + 1}/${questions.length}`;
+
+            const pct = ((currentIdx + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+        }
+
+        function quitGame() {
+            if (confirm('Quit the current quiz? Your progress will be lost.')) {
+                switchScreen('setup');
+            }
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* RESULTS SCREEN                          */
+        /* ═══════════════════════════════════════ */
+        function showResults(diedEarly) {
+            switchScreen('results');
+
+            const totalPossible = questions.length;
+            const accuracy = Math.round((correctCount / totalPossible) * 100);
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCorrect').textContent =
+                `${correctCount}/${totalPossible}`;
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+
+            // Emoji + title + rating
+            let emoji, title, subtitle, rating, ratingClass;
+
+            if (diedEarly) {
+                emoji    = '💀';
+                title    = 'GAME OVER';
+                subtitle = 'You ran out of lives!';
+                rating   = 'TRY AGAIN';
+                ratingClass = 'rating-tryagain';
+            } else if (accuracy === 100) {
+                emoji    = '🏆';
+                title    = 'PERFECT SCORE';
+                subtitle = 'Absolute legend.';
+                rating   = 'PERFECT';
+                ratingClass = 'rating-perfect';
+            } else if (accuracy >= 75) {
+                emoji    = '🎯';
+                title    = 'GREAT JOB';
+                subtitle = 'You really know your stuff!';
+                rating   = 'GREAT';
+                ratingClass = 'rating-great';
+            } else if (accuracy >= 50) {
+                emoji    = '👍';
+                title    = 'NOT BAD';
+                subtitle = 'Room to improve — try again!';
+                rating   = 'GOOD';
+                ratingClass = 'rating-good';
+            } else {
+                emoji    = '📚';
+                title    = 'KEEP STUDYING';
+                subtitle = 'Read the paragraph again and retry.';
+                rating   = 'TRY AGAIN';
+                ratingClass = 'rating-tryagain';
+            }
+
+            document.getElementById('resultsEmoji').textContent = emoji;
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsSubtitle').textContent = subtitle;
+            document.getElementById('resultsRatingWrap').innerHTML =
+                `<div class="rating ${ratingClass}">${rating}</div>`;
+        }
+
+        function playAgain() {
+            // Regenerate questions from same paragraph
+            questions    = generateQuestions(sentences, difficulty);
+            currentIdx   = 0;
+            score        = 0;
+            streak       = 0;
+            correctCount = 0;
+            lives        = 3;
+            answered     = false;
+
+            switchScreen('game');
+            renderQuestion();
+        }
+
+        function newParagraph() {
+            switchScreen('setup');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sign Language Translator | Muhammad Ameer S</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="ai.css" />
+    <style>
+        .sl-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 8px;
+            padding: 35px;
+            width: 100%;
+        }
+
+        .sl-card h2 {
+            color: #ffffff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .sl-card .subtitle {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.08);
+            color: #39ff14;
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+
+        /* ── Tabs ── */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0, 120, 255, 0.08);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #5a6a7e;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            border-color: rgba(0, 120, 255, 0.4);
+            color: #c8d6e5;
+        }
+
+        .tab-btn.active {
+            background: #0078ff;
+            border-color: #0078ff;
+            color: #ffffff;
+        }
+
+        .tab-btn i {
+            margin-right: 5px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ── Input ── */
+        .input-area {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 6px;
+            color: #c8d6e5;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-area:focus {
+            border-color: #0078ff;
+        }
+
+        .input-area::placeholder {
+            color: rgba(138, 155, 181, 0.4);
+        }
+
+        /* ── Buttons ── */
+        .btn-primary-s {
+            background: #0078ff;
+            color: #ffffff;
+            border: none;
+            padding: 11px 26px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary-s:hover {
+            background: #005bc4;
+        }
+
+        .btn-secondary-s {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.2);
+            color: #5a6a7e;
+            padding: 11px 20px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary-s:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .btn-mic {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.2);
+            color: #8a9bb5;
+            padding: 11px 18px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-mic:hover {
+            border-color: #0078ff;
+            color: #0078ff;
+        }
+
+        .btn-mic.recording {
+            border-color: #ff4444;
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1;   }
+            50%      { opacity: 0.6; }
+        }
+
+        .actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Sign display grid ── */
+        .signs-output {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0, 120, 255, 0.08);
+        }
+
+        .signs-label {
+            color: #0078ff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .signs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            gap: 12px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 120, 255, 0.08);
+            border-radius: 6px;
+            min-height: 130px;
+        }
+
+        .sign-cell {
+            background: rgba(0, 120, 255, 0.05);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.2s;
+            animation: dropIn 0.3s ease backwards;
+        }
+
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0);     }
+        }
+
+        .sign-cell:hover {
+            border-color: #0078ff;
+            background: rgba(0, 120, 255, 0.12);
+        }
+
+        .sign-cell.space {
+            background: transparent;
+            border-color: rgba(0, 120, 255, 0.05);
+        }
+
+        .sign-emoji {
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .sign-letter {
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .sign-cell.space .sign-letter {
+            color: #3a4a5a;
+        }
+
+        .sign-cell.active {
+            border-color: #ffc800;
+            background: rgba(255, 200, 0, 0.15);
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(255, 200, 0, 0.4);
+        }
+
+        /* ── Play controls ── */
+        .play-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .play-controls label {
+            color: #8a9bb5;
+            font-size: 0.7rem;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .speed-slider {
+            width: 100px;
+            accent-color: #0078ff;
+        }
+
+        /* ── Speech tab ── */
+        .voice-select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 4px;
+            color: #c8d6e5;
+            padding: 8px 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            width: 100%;
+        }
+
+        .voice-select option {
+            background: #040d1a;
+        }
+
+        .rate-slider {
+            width: 100%;
+            accent-color: #0078ff;
+        }
+
+        .voice-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .control-group label {
+            color: #8a9bb5;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .rate-value {
+            color: #0078ff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+        }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            display: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .back-link {
+            color: #5a6a7e;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #0078ff;
+        }
+
+        .helper-text {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        @media (max-width: 600px) {
+            .voice-controls {
+                grid-template-columns: 1fr;
+            }
+            .signs-grid {
+                grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            }
+            .sign-emoji { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="star-container"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand nav-logo" href="index.html">ameer@dev:~$</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">~/home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#projects">~/projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">~/contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="main-wrapper container">
+
+        <a href="index.html#projects" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> back to projects
+        </a>
+
+        <div class="sl-card">
+            <h2>
+                <i class="fa-solid fa-hands" style="color:#0078ff;margin-right:8px;"></i>
+                SIGN LANGUAGE TRANSLATOR
+                <span class="info-badge">ASL &middot; TEXT-TO-SPEECH</span>
+            </h2>
+            <p class="subtitle">TWO-WAY ACCESSIBILITY TOOL — TEXT TO SIGN &middot; TEXT TO SPEECH</p>
+
+            <!-- TABS -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('sign', this)">
+                    <i class="fa-solid fa-hand-peace"></i>TEXT → SIGN
+                </button>
+                <button class="tab-btn" onclick="switchTab('speak', this)">
+                    <i class="fa-solid fa-volume-high"></i>TEXT → SPEECH
+                </button>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- TAB 1: TEXT TO SIGN                      -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel active" id="panel-sign">
+                <textarea class="input-area" id="signInput"
+                          placeholder="Type any English text... e.g. HELLO WORLD"
+                          oninput="renderSigns()"></textarea>
+
+                <div class="actions-row">
+                    <button class="btn-mic" id="micSignBtn" onclick="startVoiceInput('signInput')">
+                        <i class="fa-solid fa-microphone"></i> USE VOICE
+                    </button>
+                    <button class="btn-primary-s" onclick="playSignsAnimation()">
+                        <i class="fa-solid fa-play"></i> PLAY ANIMATION
+                    </button>
+                    <button class="btn-secondary-s" onclick="clearSigns()">
+                        <i class="fa-solid fa-trash"></i> CLEAR
+                    </button>
+                </div>
+
+                <div class="helper-text">
+                    Only A-Z letters shown. Numbers and symbols are skipped.
+                </div>
+
+                <div class="signs-output">
+                    <div class="signs-label">ASL SIGNS //</div>
+                    <div class="signs-grid" id="signsGrid">
+                        <span style="color:#3a4a5a;font-size:0.8rem;padding:20px;">start typing to see signs...</span>
+                    </div>
+
+                    <div class="play-controls">
+                        <label>
+                            <i class="fa-solid fa-gauge"></i>
+                            ANIMATION SPEED:
+                        </label>
+                        <input type="range" class="speed-slider" id="speedSlider"
+                               min="200" max="1500" step="100" value="600" />
+                        <span class="rate-value" id="speedValue">600ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- TAB 2: TEXT TO SPEECH                    -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel" id="panel-speak">
+                <textarea class="input-area" id="speakInput"
+                          placeholder="Type what you want the website to speak aloud..."></textarea>
+
+                <div class="actions-row">
+                    <button class="btn-mic" id="micSpeakBtn" onclick="startVoiceInput('speakInput')">
+                        <i class="fa-solid fa-microphone"></i> USE VOICE
+                    </button>
+                    <button class="btn-primary-s" onclick="speakText()">
+                        <i class="fa-solid fa-volume-high"></i> SPEAK
+                    </button>
+                    <button class="btn-secondary-s" onclick="stopSpeaking()">
+                        <i class="fa-solid fa-stop"></i> STOP
+                    </button>
+                </div>
+
+                <div class="helper-text">
+                    Uses your browser's built-in voice. Works completely offline.
+                </div>
+
+                <div class="voice-controls">
+                    <div class="control-group">
+                        <label>VOICE</label>
+                        <select class="voice-select" id="voiceSelect"></select>
+                    </div>
+                    <div class="control-group">
+                        <label>
+                            SPEED
+                            <span class="rate-value" id="rateValue" style="float:right;">1.0x</span>
+                        </label>
+                        <input type="range" class="rate-slider" id="rateSlider"
+                               min="0.5" max="2" step="0.1" value="1" />
+                    </div>
+                </div>
+
+                <div class="error-msg" id="speakError"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AI CHAT -->
+    <button class="ai-chat-toggle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-dot"></span>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-terminal network-pulse"></i>
+                <div>
+                    <h4>AMEER_AI</h4>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            <button class="close-chat-btn" onclick="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="ai-message">
+                <p><strong>system:</strong> Sign Language Translator loaded.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput"
+                   placeholder="ask something..."
+                   onkeypress="handleKeyPress(event)" />
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            if (!container) return;
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        window.addEventListener('load', createStars);
+    </script>
+    <script src="ai.js"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SIGN LANGUAGE ENGINE — EMOJI VERSION         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script>
+        /* ─── ASL ALPHABET AS EMOJI ─── */
+        /* Uses hand-related emojis as visual representations for each letter */
+        const ASL_EMOJI = {
+            A: '👊',   // closed fist
+            B: '🖐️',   // flat hand
+            C: '🤏',   // C-shape pinch
+            D: '☝️',   // pointing up
+            E: '✊',   // fingers curled
+            F: '👌',   // OK sign
+            G: '👉',   // pointing right
+            H: '✌️',   // two fingers sideways
+            I: '🤙',   // pinky out
+            J: '🤙',   // pinky (traced J)
+            K: '✌️',   // two fingers up
+            L: '🤟',   // L-shape (thumb & index)
+            M: '✊',   // fist with 3 fingers
+            N: '✊',   // fist with 2 fingers
+            O: '⭕',   // O shape
+            P: '👇',   // pointing down
+            Q: '👇',   // pointing down angled
+            R: '🤞',   // crossed fingers
+            S: '✊',   // closed fist
+            T: '👍',   // thumb between fingers
+            U: '✌️',   // two fingers up together
+            V: '✌️',   // victory / peace
+            W: '🖖',   // three fingers spread
+            X: '☝️',   // bent index finger
+            Y: '🤙',   // thumb + pinky (hang loose)
+            Z: '👆'    // index tracing Z
+        };
+
+        /* ═══════════════════════════════════════ */
+        /* TAB SWITCHING                           */
+        /* ═══════════════════════════════════════ */
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('panel-' + id).classList.add('active');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* TEXT → SIGN                             */
+        /* ═══════════════════════════════════════ */
+        function renderSigns() {
+            const text = document.getElementById('signInput').value.toUpperCase();
+            const grid = document.getElementById('signsGrid');
+
+            if (!text.trim()) {
+                grid.innerHTML = '<span style="color:#3a4a5a;font-size:0.8rem;padding:20px;">start typing to see signs...</span>';
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            let delay = 0;
+            let validCount = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+
+                if (ch === ' ') {
+                    const spaceCell = document.createElement('div');
+                    spaceCell.className = 'sign-cell space';
+                    spaceCell.style.animationDelay = delay + 'ms';
+                    spaceCell.innerHTML = `
+                        <span class="sign-emoji">␣</span>
+                        <div class="sign-letter">SPACE</div>
+                    `;
+                    grid.appendChild(spaceCell);
+                    delay += 40;
+                } else if (ASL_EMOJI[ch]) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sign-cell';
+                    cell.style.animationDelay = delay + 'ms';
+                    cell.dataset.letter = ch;
+                    cell.innerHTML = `
+                        <span class="sign-emoji">${ASL_EMOJI[ch]}</span>
+                        <div class="sign-letter">${ch}</div>
+                    `;
+                    grid.appendChild(cell);
+                    validCount++;
+                    delay += 40;
+                }
+            }
+
+            if (validCount === 0 && grid.children.length === 0) {
+                grid.innerHTML = '<span style="color:#ff4444;font-size:0.8rem;padding:20px;">no valid letters found</span>';
+            }
+        }
+
+        function clearSigns() {
+            document.getElementById('signInput').value = '';
+            renderSigns();
+        }
+
+        async function playSignsAnimation() {
+            const cells = document.querySelectorAll('.sign-cell:not(.space)');
+            if (cells.length === 0) return;
+
+            const speed = parseInt(document.getElementById('speedSlider').value);
+
+            cells.forEach(c => c.classList.remove('active'));
+
+            for (const cell of cells) {
+                cell.classList.add('active');
+                cell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                await new Promise(r => setTimeout(r, speed));
+                cell.classList.remove('active');
+            }
+        }
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            document.getElementById('speedValue').textContent = e.target.value + 'ms';
+        });
+
+        /* ═══════════════════════════════════════ */
+        /* TEXT → SPEECH                           */
+        /* ═══════════════════════════════════════ */
+        let availableVoices = [];
+
+        function loadVoices() {
+            availableVoices = speechSynthesis.getVoices();
+            const select = document.getElementById('voiceSelect');
+            select.innerHTML = '';
+
+            if (availableVoices.length === 0) {
+                const opt = document.createElement('option');
+                opt.textContent = 'Default voice';
+                select.appendChild(opt);
+                return;
+            }
+
+            const english = availableVoices.filter(v => v.lang.startsWith('en'));
+            const others  = availableVoices.filter(v => !v.lang.startsWith('en'));
+            const ordered = [...english, ...others];
+
+            ordered.forEach((voice, i) => {
+                const opt = document.createElement('option');
+                opt.value = availableVoices.indexOf(voice);
+                opt.textContent = `${voice.name} (${voice.lang})`;
+                if (i === 0) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speakText() {
+            const text = document.getElementById('speakInput').value.trim();
+            const errorEl = document.getElementById('speakError');
+            errorEl.classList.remove('visible');
+
+            if (!text) {
+                errorEl.textContent = '> error: nothing to speak';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            if (!('speechSynthesis' in window)) {
+                errorEl.textContent = '> error: your browser doesn\'t support speech synthesis';
+                errorEl.classList.add('visible');
+                return;
+            }
+
+            speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            const voiceIdx = parseInt(document.getElementById('voiceSelect').value);
+            if (!isNaN(voiceIdx) && availableVoices[voiceIdx]) {
+                utterance.voice = availableVoices[voiceIdx];
+            }
+
+            utterance.rate = parseFloat(document.getElementById('rateSlider').value);
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            speechSynthesis.cancel();
+        }
+
+        document.getElementById('rateSlider').addEventListener('input', (e) => {
+            document.getElementById('rateValue').textContent = e.target.value + 'x';
+        });
+
+        /* ═══════════════════════════════════════ */
+        /* VOICE → TEXT (microphone)               */
+        /* ═══════════════════════════════════════ */
+        let recognition = null;
+        let isRecording = false;
+
+        function initSpeechRecognition() {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) return null;
+            const rec = new SpeechRec();
+            rec.lang = 'en-US';
+            rec.continuous = false;
+            rec.interimResults = false;
+            return rec;
+        }
+
+        function startVoiceInput(targetInputId) {
+            if (!recognition) recognition = initSpeechRecognition();
+
+            if (!recognition) {
+                alert('Voice input is not supported in this browser. Please use Chrome or Edge.');
+                return;
+            }
+
+            const btnId = targetInputId === 'signInput' ? 'micSignBtn' : 'micSpeakBtn';
+            const btn = document.getElementById(btnId);
+
+            if (isRecording) {
+                recognition.stop();
+                return;
+            }
+
+            isRecording = true;
+            btn.classList.add('recording');
+            btn.innerHTML = '<i class="fa-solid fa-microphone"></i> LISTENING...';
+
+            recognition.start();
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                const target = document.getElementById(targetInputId);
+                target.value = transcript;
+
+                if (targetInputId === 'signInput') renderSigns();
+            };
+
+            recognition.onerror = (event) => {
+                alert('Voice error: ' + event.error);
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                btn.classList.remove('recording');
+                btn.innerHTML = '<i class="fa-solid fa-microphone"></i> USE VOICE';
+            };
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Muhammad Ameer S</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="ai.css">
+    <style>
+        .contact-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 8px;
+            padding: 35px;
+        }
+
+        .contact-card h2 {
+            color: #ffffff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .contact-card h2 i {
+            color: #0078ff;
+            margin-right: 8px;
+        }
+
+        .contact-info p {
+            color: #8a9bb5;
+            font-size: 0.85rem;
+            margin: 8px 0;
+        }
+
+        .contact-info i {
+            color: #0078ff;
+            margin-right: 10px;
+            width: 16px;
+        }
+
+        .form-control {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #c8d6e5;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+        }
+
+        .form-control:focus {
+            background: rgba(0, 0, 0, 0.7);
+            border-color: #0078ff;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(138, 155, 181, 0.4);
+        }
+
+        .btn-send {
+            background: #0078ff;
+            border: none;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-send:hover {
+            background: #005bc4;
+            color: #fff;
+        }
+
+        .back-link {
+            color: #5a6a7e;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #0078ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="star-container"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand nav-logo" href="index.html">ameer@dev:~$</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">~/home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#projects">~/projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="contact.html">~/contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper container">
+
+        <a href="index.html" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> back to home
+        </a>
+
+        <div class="row justify-content-center w-100">
+            <div class="col-lg-8">
+                <div class="contact-card">
+                    <h2><i class="fa-solid fa-terminal"></i> ~/CONTACT</h2>
+
+                    <div class="contact-info mb-4">
+                        <p><i class="fa-solid fa-envelope"></i> 27ameer11@gmail.com</p>
+                        <p><i class="fa-brands fa-github"></i> github.com/yourhandle</p>
+                        <p><i class="fa-brands fa-linkedin"></i> linkedin.com/in/yourhandle</p>
+                        <p><i class="fa-solid fa-location-dot"></i> Mentor College of Engineering</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); alert('Message sent! (Demo)');">
+                        <div class="mb-3">
+                            <input type="text" class="form-control"
+                                   placeholder="your name" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control"
+                                   placeholder="your email" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="4"
+                                      placeholder="your message..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-send">
+                            <i class="fa-solid fa-paper-plane"></i> SEND
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat -->
+    <button class="ai-chat-toggle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-dot"></span>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-terminal network-pulse"></i>
+                <div>
+                    <h4>AMEER_AI</h4>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            <button class="close-chat-btn" onclick="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="ai-message">
+                <p><strong>system:</strong> Need contact info? Just ask.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput"
+                   placeholder="ask something..."
+                   onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            if (!container) return;
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        window.addEventListener('load', createStars);
+    </script>
+    <script src="ai.js"></script>
+</body>
+</html>

@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Calculator Suite | Muhammad Ameer S</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="ai.css" />
+    <style>
+        .calc-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 8px;
+            padding: 35px;
+            width: 100%;
+        }
+
+        .calc-card h2 {
+            color: #ffffff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .calc-card .subtitle {
+            color: #5a6a7e;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.08);
+            color: #39ff14;
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+
+        /* ── Tabs ── */
+        .tab-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0, 120, 255, 0.08);
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #5a6a7e;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            border-color: rgba(0, 120, 255, 0.4);
+            color: #c8d6e5;
+        }
+
+        .tab-btn.active {
+            background: #0078ff;
+            border-color: #0078ff;
+            color: #ffffff;
+        }
+
+        .tab-btn i {
+            margin-right: 5px;
+        }
+
+        /* ── Panels ── */
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ── Form Elements ── */
+        .form-label {
+            color: #8a9bb5;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .calc-input, .calc-select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            border-radius: 6px;
+            color: #ffffff;
+            padding: 10px 14px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .calc-input:focus, .calc-select:focus {
+            border-color: #0078ff;
+        }
+
+        .calc-input::placeholder {
+            color: rgba(138, 155, 181, 0.4);
+        }
+
+        .calc-select option {
+            background: #040d1a;
+            color: #ffffff;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .input-row-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        /* ── Unit selector inline ── */
+        .unit-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .unit-btn {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.12);
+            color: #5a6a7e;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .unit-btn.active {
+            background: #0078ff;
+            border-color: #0078ff;
+            color: #ffffff;
+        }
+
+        /* ── Action buttons ── */
+        .btn-calc {
+            background: #0078ff;
+            color: #ffffff;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn-calc:hover {
+            background: #005bc4;
+        }
+
+        .btn-reset {
+            background: transparent;
+            border: 1px solid rgba(0, 120, 255, 0.15);
+            color: #5a6a7e;
+            padding: 11px 20px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 5px;
+            margin-left: 8px;
+        }
+
+        .btn-reset:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* ── Result Box ── */
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 120, 255, 0.15);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .result-box.visible {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0);    }
+        }
+
+        .result-label {
+            color: #0078ff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-main {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 5px;
+        }
+
+        .result-sub {
+            color: #8a9bb5;
+            font-size: 0.85rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .result-category {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 5px 14px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+        }
+
+        .cat-underweight  { background: rgba(0, 200, 255, 0.15); color: #00c8ff; border: 1px solid rgba(0,200,255,0.3); }
+        .cat-normal       { background: rgba(57, 255, 20, 0.15); color: #39ff14; border: 1px solid rgba(57,255,20,0.3); }
+        .cat-overweight   { background: rgba(255, 200, 0, 0.15); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+        .cat-obese        { background: rgba(255, 68, 68, 0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
+
+        .result-detail {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 120, 255, 0.1);
+            color: #8a9bb5;
+            font-size: 0.8rem;
+            line-height: 1.7;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .result-detail span {
+            color: #ffffff;
+        }
+
+        .error-msg {
+            color: #ff4444;
+            font-size: 0.8rem;
+            margin-top: 12px;
+            display: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        .back-link {
+            color: #5a6a7e;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #0078ff;
+        }
+
+        /* Age result grid */
+        .age-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .age-cell {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 120, 255, 0.1);
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .age-cell .num {
+            color: #0078ff;
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .age-cell .lbl {
+            color: #5a6a7e;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            .age-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="star-container"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand nav-logo" href="index.html">ameer@dev:~$</a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">~/home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#projects">~/projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">~/contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="main-wrapper container">
+
+        <a href="index.html#projects" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> back to projects
+        </a>
+
+        <div class="calc-card">
+            <h2>
+                <i class="fa-solid fa-calculator" style="color:#0078ff;margin-right:8px;"></i>
+                CALCULATOR SUITE
+                <span class="info-badge">100% OFFLINE</span>
+            </h2>
+            <p class="subtitle">BMI · LENGTH · WEIGHT · TEMPERATURE · AGE</p>
+
+            <!-- TABS -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('bmi', this)">
+                    <i class="fa-solid fa-weight-scale"></i>BMI
+                </button>
+                <button class="tab-btn" onclick="switchTab('length', this)">
+                    <i class="fa-solid fa-ruler"></i>LENGTH
+                </button>
+                <button class="tab-btn" onclick="switchTab('weight', this)">
+                    <i class="fa-solid fa-scale-balanced"></i>WEIGHT
+                </button>
+                <button class="tab-btn" onclick="switchTab('temp', this)">
+                    <i class="fa-solid fa-temperature-half"></i>TEMPERATURE
+                </button>
+                <button class="tab-btn" onclick="switchTab('age', this)">
+                    <i class="fa-solid fa-cake-candles"></i>AGE
+                </button>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- BMI PANEL                                -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel active" id="panel-bmi">
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">Weight (kg)</label>
+                        <input type="number" class="calc-input" id="bmiWeight" placeholder="70" step="0.1" />
+                    </div>
+                    <div>
+                        <label class="form-label">Height (cm)</label>
+                        <input type="number" class="calc-input" id="bmiHeight" placeholder="175" step="0.1" />
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcBMI()">
+                    <i class="fa-solid fa-bolt"></i> CALCULATE
+                </button>
+                <button class="btn-reset" onclick="resetBMI()">
+                    <i class="fa-solid fa-rotate-left"></i> RESET
+                </button>
+
+                <div class="error-msg" id="bmiError"></div>
+
+                <div class="result-box" id="bmiResult">
+                    <div class="result-label">YOUR BMI //</div>
+                    <div class="result-main" id="bmiValue">0.0</div>
+                    <div class="result-sub" id="bmiFormula"></div>
+                    <div id="bmiCategoryWrap"></div>
+                    <div class="result-detail" id="bmiDetail"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- LENGTH PANEL                             -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel" id="panel-length">
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">Value</label>
+                        <input type="number" class="calc-input" id="lenValue" placeholder="1" step="any" />
+                    </div>
+                    <div>
+                        <label class="form-label">From</label>
+                        <select class="calc-select" id="lenFrom">
+                            <option value="mm">Millimetres (mm)</option>
+                            <option value="cm" selected>Centimetres (cm)</option>
+                            <option value="m">Metres (m)</option>
+                            <option value="km">Kilometres (km)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="yd">Yards (yd)</option>
+                            <option value="mi">Miles (mi)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">To</label>
+                        <select class="calc-select" id="lenTo">
+                            <option value="mm">Millimetres (mm)</option>
+                            <option value="cm">Centimetres (cm)</option>
+                            <option value="m" selected>Metres (m)</option>
+                            <option value="km">Kilometres (km)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="yd">Yards (yd)</option>
+                            <option value="mi">Miles (mi)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcLength()">
+                    <i class="fa-solid fa-bolt"></i> CONVERT
+                </button>
+                <button class="btn-reset" onclick="resetLength()">
+                    <i class="fa-solid fa-rotate-left"></i> RESET
+                </button>
+
+                <div class="error-msg" id="lenError"></div>
+
+                <div class="result-box" id="lenResult">
+                    <div class="result-label">RESULT //</div>
+                    <div class="result-main" id="lenValueOut">0</div>
+                    <div class="result-sub" id="lenFormula"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- WEIGHT PANEL                             -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel" id="panel-weight">
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">Value</label>
+                        <input type="number" class="calc-input" id="wtValue" placeholder="1" step="any" />
+                    </div>
+                    <div>
+                        <label class="form-label">From</label>
+                        <select class="calc-select" id="wtFrom">
+                            <option value="mg">Milligrams (mg)</option>
+                            <option value="g">Grams (g)</option>
+                            <option value="kg" selected>Kilograms (kg)</option>
+                            <option value="t">Metric Tons (t)</option>
+                            <option value="oz">Ounces (oz)</option>
+                            <option value="lb">Pounds (lb)</option>
+                            <option value="st">Stone (st)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">To</label>
+                        <select class="calc-select" id="wtTo">
+                            <option value="mg">Milligrams (mg)</option>
+                            <option value="g">Grams (g)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="t">Metric Tons (t)</option>
+                            <option value="oz">Ounces (oz)</option>
+                            <option value="lb" selected>Pounds (lb)</option>
+                            <option value="st">Stone (st)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcWeight()">
+                    <i class="fa-solid fa-bolt"></i> CONVERT
+                </button>
+                <button class="btn-reset" onclick="resetWeight()">
+                    <i class="fa-solid fa-rotate-left"></i> RESET
+                </button>
+
+                <div class="error-msg" id="wtError"></div>
+
+                <div class="result-box" id="wtResult">
+                    <div class="result-label">RESULT //</div>
+                    <div class="result-main" id="wtValueOut">0</div>
+                    <div class="result-sub" id="wtFormula"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- TEMPERATURE PANEL                        -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel" id="panel-temp">
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">Value</label>
+                        <input type="number" class="calc-input" id="tempValue" placeholder="25" step="any" />
+                    </div>
+                    <div>
+                        <label class="form-label">From</label>
+                        <select class="calc-select" id="tempFrom">
+                            <option value="c" selected>Celsius (°C)</option>
+                            <option value="f">Fahrenheit (°F)</option>
+                            <option value="k">Kelvin (K)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">To</label>
+                        <select class="calc-select" id="tempTo">
+                            <option value="c">Celsius (°C)</option>
+                            <option value="f" selected>Fahrenheit (°F)</option>
+                            <option value="k">Kelvin (K)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcTemp()">
+                    <i class="fa-solid fa-bolt"></i> CONVERT
+                </button>
+                <button class="btn-reset" onclick="resetTemp()">
+                    <i class="fa-solid fa-rotate-left"></i> RESET
+                </button>
+
+                <div class="error-msg" id="tempError"></div>
+
+                <div class="result-box" id="tempResult">
+                    <div class="result-label">RESULT //</div>
+                    <div class="result-main" id="tempValueOut">0</div>
+                    <div class="result-sub" id="tempFormula"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- AGE PANEL                                -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="tab-panel" id="panel-age">
+                <div class="input-row">
+                    <div>
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="calc-input" id="ageDob" />
+                    </div>
+                    <div>
+                        <label class="form-label">Calculate As Of</label>
+                        <input type="date" class="calc-input" id="ageAsOf" />
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcAge()">
+                    <i class="fa-solid fa-bolt"></i> CALCULATE
+                </button>
+                <button class="btn-reset" onclick="resetAge()">
+                    <i class="fa-solid fa-rotate-left"></i> RESET
+                </button>
+
+                <div class="error-msg" id="ageError"></div>
+
+                <div class="result-box" id="ageResult">
+                    <div class="result-label">YOUR AGE //</div>
+                    <div class="result-main" id="ageMain">0 years</div>
+                    <div class="age-grid">
+                        <div class="age-cell">
+                            <div class="num" id="ageMonths">0</div>
+                            <div class="lbl">Total Months</div>
+                        </div>
+                        <div class="age-cell">
+                            <div class="num" id="ageWeeks">0</div>
+                            <div class="lbl">Total Weeks</div>
+                        </div>
+                        <div class="age-cell">
+                            <div class="num" id="ageDays">0</div>
+                            <div class="lbl">Total Days</div>
+                        </div>
+                    </div>
+                    <div class="result-detail" id="ageDetail"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AI CHAT -->
+    <button class="ai-chat-toggle" onclick="toggleChat()">
+        <i class="fa-solid fa-robot"></i>
+        <span class="pulse-dot"></span>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="chat-header">
+            <div class="header-info">
+                <i class="fa-solid fa-terminal network-pulse"></i>
+                <div>
+                    <h4>AMEER_AI</h4>
+                    <span class="status-text">ONLINE</span>
+                </div>
+            </div>
+            <button class="close-chat-btn" onclick="toggleChat()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="ai-message">
+                <p><strong>system:</strong> You're on the Calculator Suite. Ask me anything.</p>
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput"
+                   placeholder="ask something..."
+                   onkeypress="handleKeyPress(event)" />
+            <button onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function createStars() {
+            const container = document.getElementById('star-container');
+            if (!container) return;
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(star);
+            }
+        }
+        window.addEventListener('load', createStars);
+    </script>
+    <script src="ai.js"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- CALCULATOR ENGINE                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <script>
+
+        /* ─── TAB SWITCHING ─── */
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('panel-' + id).classList.add('active');
+        }
+
+        /* ─── ERROR HELPERS ─── */
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = '> error: ' + msg;
+            el.classList.add('visible');
+        }
+        function hideError(id) {
+            document.getElementById(id).classList.remove('visible');
+        }
+        function hideResult(id) {
+            document.getElementById(id).classList.remove('visible');
+        }
+        function showResult(id) {
+            document.getElementById(id).classList.add('visible');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* BMI CALCULATOR                          */
+        /* ═══════════════════════════════════════ */
+        function calcBMI() {
+            hideError('bmiError');
+            hideResult('bmiResult');
+
+            const weight = parseFloat(document.getElementById('bmiWeight').value);
+            const height = parseFloat(document.getElementById('bmiHeight').value);
+
+            if (isNaN(weight) || isNaN(height)) {
+                showError('bmiError', 'enter both weight and height');
+                return;
+            }
+            if (weight <= 0 || height <= 0) {
+                showError('bmiError', 'values must be greater than 0');
+                return;
+            }
+            if (weight > 700 || height > 300) {
+                showError('bmiError', 'values seem unrealistic');
+                return;
+            }
+
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
+            const bmiRounded = bmi.toFixed(1);
+
+            document.getElementById('bmiValue').textContent = bmiRounded + ' kg/m²';
+            document.getElementById('bmiFormula').textContent =
+                `${weight} kg ÷ (${heightM.toFixed(2)} m)² = ${bmiRounded}`;
+
+            // Category
+            let cat, catClass, advice;
+            if (bmi < 18.5) {
+                cat = 'UNDERWEIGHT';
+                catClass = 'cat-underweight';
+                advice = 'Below normal weight range. Consider consulting a nutritionist.';
+            } else if (bmi < 25) {
+                cat = 'NORMAL WEIGHT';
+                catClass = 'cat-normal';
+                advice = 'Within healthy weight range. Keep it up.';
+            } else if (bmi < 30) {
+                cat = 'OVERWEIGHT';
+                catClass = 'cat-overweight';
+                advice = 'Above normal range. Regular exercise recommended.';
+            } else {
+                cat = 'OBESE';
+                catClass = 'cat-obese';
+                advice = 'Consult a healthcare professional for guidance.';
+            }
+
+            document.getElementById('bmiCategoryWrap').innerHTML =
+                `<span class="result-category ${catClass}">${cat}</span>`;
+
+            // Ideal weight range for the given height
+            const minIdeal = (18.5 * heightM * heightM).toFixed(1);
+            const maxIdeal = (24.9 * heightM * heightM).toFixed(1);
+
+            document.getElementById('bmiDetail').innerHTML = `
+                ${advice}<br><br>
+                healthy weight range for your height: <span>${minIdeal} kg — ${maxIdeal} kg</span>
+            `;
+
+            showResult('bmiResult');
+        }
+
+        function resetBMI() {
+            document.getElementById('bmiWeight').value = '';
+            document.getElementById('bmiHeight').value = '';
+            hideResult('bmiResult');
+            hideError('bmiError');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* LENGTH CONVERTER                        */
+        /* All values convert through metres (m)   */
+        /* ═══════════════════════════════════════ */
+        const LENGTH_TO_METER = {
+            mm: 0.001,
+            cm: 0.01,
+            m:  1,
+            km: 1000,
+            in: 0.0254,
+            ft: 0.3048,
+            yd: 0.9144,
+            mi: 1609.344
+        };
+
+        const LENGTH_NAME = {
+            mm: 'mm', cm: 'cm', m: 'm', km: 'km',
+            in: 'in', ft: 'ft', yd: 'yd', mi: 'mi'
+        };
+
+        function calcLength() {
+            hideError('lenError');
+            hideResult('lenResult');
+
+            const val = parseFloat(document.getElementById('lenValue').value);
+            const from = document.getElementById('lenFrom').value;
+            const to = document.getElementById('lenTo').value;
+
+            if (isNaN(val)) {
+                showError('lenError', 'enter a valid number');
+                return;
+            }
+
+            const inMeters = val * LENGTH_TO_METER[from];
+            const result = inMeters / LENGTH_TO_METER[to];
+            const formatted = formatNumber(result);
+
+            document.getElementById('lenValueOut').textContent =
+                `${formatted} ${LENGTH_NAME[to]}`;
+            document.getElementById('lenFormula').textContent =
+                `${val} ${LENGTH_NAME[from]} = ${formatted} ${LENGTH_NAME[to]}`;
+
+            showResult('lenResult');
+        }
+
+        function resetLength() {
+            document.getElementById('lenValue').value = '';
+            hideResult('lenResult');
+            hideError('lenError');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* WEIGHT CONVERTER                        */
+        /* All values convert through grams (g)    */
+        /* ═══════════════════════════════════════ */
+        const WEIGHT_TO_GRAM = {
+            mg: 0.001,
+            g:  1,
+            kg: 1000,
+            t:  1000000,
+            oz: 28.3495,
+            lb: 453.592,
+            st: 6350.29
+        };
+
+        const WEIGHT_NAME = {
+            mg: 'mg', g: 'g', kg: 'kg', t: 't',
+            oz: 'oz', lb: 'lb', st: 'st'
+        };
+
+        function calcWeight() {
+            hideError('wtError');
+            hideResult('wtResult');
+
+            const val = parseFloat(document.getElementById('wtValue').value);
+            const from = document.getElementById('wtFrom').value;
+            const to = document.getElementById('wtTo').value;
+
+            if (isNaN(val)) {
+                showError('wtError', 'enter a valid number');
+                return;
+            }
+
+            const inGrams = val * WEIGHT_TO_GRAM[from];
+            const result = inGrams / WEIGHT_TO_GRAM[to];
+            const formatted = formatNumber(result);
+
+            document.getElementById('wtValueOut').textContent =
+                `${formatted} ${WEIGHT_NAME[to]}`;
+            document.getElementById('wtFormula').textContent =
+                `${val} ${WEIGHT_NAME[from]} = ${formatted} ${WEIGHT_NAME[to]}`;
+
+            showResult('wtResult');
+        }
+
+        function resetWeight() {
+            document.getElementById('wtValue').value = '';
+            hideResult('wtResult');
+            hideError('wtError');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* TEMPERATURE CONVERTER                   */
+        /* ═══════════════════════════════════════ */
+        function calcTemp() {
+            hideError('tempError');
+            hideResult('tempResult');
+
+            const val = parseFloat(document.getElementById('tempValue').value);
+            const from = document.getElementById('tempFrom').value;
+            const to = document.getElementById('tempTo').value;
+
+            if (isNaN(val)) {
+                showError('tempError', 'enter a valid temperature');
+                return;
+            }
+
+            // First convert input → Celsius
+            let celsius;
+            if (from === 'c') celsius = val;
+            else if (from === 'f') celsius = (val - 32) * 5 / 9;
+            else celsius = val - 273.15;  // Kelvin
+
+            // Reject impossible values (below absolute zero)
+            if (celsius < -273.15) {
+                showError('tempError', 'temperature below absolute zero (-273.15°C)');
+                return;
+            }
+
+            // Convert Celsius → target
+            let result;
+            let unit;
+            if (to === 'c')      { result = celsius;                     unit = '°C'; }
+            else if (to === 'f') { result = (celsius * 9 / 5) + 32;      unit = '°F'; }
+            else                 { result = celsius + 273.15;            unit = 'K';  }
+
+            const formatted = formatNumber(result);
+            const fromUnit = from === 'c' ? '°C' : from === 'f' ? '°F' : 'K';
+
+            document.getElementById('tempValueOut').textContent =
+                `${formatted} ${unit}`;
+            document.getElementById('tempFormula').textContent =
+                `${val} ${fromUnit} = ${formatted} ${unit}`;
+
+            showResult('tempResult');
+        }
+
+        function resetTemp() {
+            document.getElementById('tempValue').value = '';
+            hideResult('tempResult');
+            hideError('tempError');
+        }
+
+        /* ═══════════════════════════════════════ */
+        /* AGE CALCULATOR                          */
+        /* ═══════════════════════════════════════ */
+
+        // Set today as default "As Of" date
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('ageAsOf').value = today;
+        });
+
+        function calcAge() {
+            hideError('ageError');
+            hideResult('ageResult');
+
+            const dobStr = document.getElementById('ageDob').value;
+            const asOfStr = document.getElementById('ageAsOf').value;
+
+            if (!dobStr) {
+                showError('ageError', 'enter your date of birth');
+                return;
+            }
+            if (!asOfStr) {
+                showError('ageError', 'enter target date');
+                return;
+            }
+
+            const dob = new Date(dobStr);
+            const asOf = new Date(asOfStr);
+
+            if (asOf < dob) {
+                showError('ageError', 'target date cannot be before birth date');
+                return;
+            }
+
+            // Years / Months / Days precise calculation
+            let years  = asOf.getFullYear()  - dob.getFullYear();
+            let months = asOf.getMonth()     - dob.getMonth();
+            let days   = asOf.getDate()      - dob.getDate();
+
+            if (days < 0) {
+                months--;
+                // Days in previous month
+                const prev = new Date(asOf.getFullYear(), asOf.getMonth(), 0);
+                days += prev.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            // Total values
+            const diffMs   = asOf - dob;
+            const totalDays  = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const totalWeeks = Math.floor(totalDays / 7);
+            const totalMonths = years * 12 + months;
+
+            document.getElementById('ageMain').textContent =
+                `${years} yr · ${months} mo · ${days} d`;
+
+            document.getElementById('ageMonths').textContent = totalMonths.toLocaleString();
+            document.getElementById('ageWeeks').textContent  = totalWeeks.toLocaleString();
+            document.getElementById('ageDays').textContent   = totalDays.toLocaleString();
+
+            // Next birthday
+            const nextBday = new Date(asOf.getFullYear(), dob.getMonth(), dob.getDate());
+            if (nextBday <= asOf) nextBday.setFullYear(asOf.getFullYear() + 1);
+            const daysToBday = Math.ceil((nextBday - asOf) / (1000 * 60 * 60 * 24));
+
+            document.getElementById('ageDetail').innerHTML = `
+                born on: <span>${dob.toDateString()}</span><br>
+                next birthday in: <span>${daysToBday} days</span>
+            `;
+
+            showResult('ageResult');
+        }
+
+        function resetAge() {
+            document.getElementById('ageDob').value = '';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('ageAsOf').value = today;
+            hideResult('ageResult');
+            hideError('ageError');
+        }
+
+        /* ─── Utility: smart number formatting ─── */
+        function formatNumber(num) {
+            if (num === 0) return '0';
+            const abs = Math.abs(num);
+            if (abs >= 1_000_000_000) return num.toExponential(4);
+            if (abs >= 1_000)         return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
+            if (abs >= 1)             return num.toFixed(4).replace(/\.?0+$/, '');
+            if (abs >= 0.0001)        return num.toFixed(6).replace(/\.?0+$/, '');
+            return num.toExponential(4);
+        }
+    </script>
+</body>
+</html>
